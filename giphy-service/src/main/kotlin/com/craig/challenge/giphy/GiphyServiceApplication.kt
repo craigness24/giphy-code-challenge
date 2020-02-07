@@ -20,7 +20,6 @@ class GiphyServiceApplication {
     }
 }
 
-
 fun main(args: Array<String>) {
     runApplication<GiphyServiceApplication>(*args)
 }
@@ -37,12 +36,13 @@ class RestController(private val giphyRestClient: GiphyRestClient) {
 class GiphyRestClient(private val props: GiphyApiProperties,
                       private val restTemplate: RestTemplate) {
     fun search(): String? {
-        return restTemplate.getForObject("http://api.giphy.com/v1/gifs/search?q=ryan+gosling&api_key=${props.key}&limit=5", String::class.java)
+        return restTemplate.getForObject("${props.url}/search?q=ryan+gosling&api_key=${props.key}&limit=5", String::class.java)
     }
 }
 
 @Configuration
-@ConfigurationProperties(prefix = "gipy.api")
+@ConfigurationProperties(prefix = "giphy.api")
 class GiphyApiProperties() {
     lateinit var key: String;
+    lateinit var url: String;
 }
