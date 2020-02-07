@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="ProjectModuleManager">
-    <modules>
-      <module fileurl="file://$PROJECT_DIR$/giphy-code-challenge.iml" filepath="$PROJECT_DIR$/giphy-code-challenge.iml" />
-      <module fileurl="file://$PROJECT_DIR$/giphy-ui/giphy-ui.iml" filepath="$PROJECT_DIR$/giphy-ui/giphy-ui.iml" />
-    </modules>
-  </component>
-</project>
