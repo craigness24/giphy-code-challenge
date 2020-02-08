@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.client.RestTemplate
@@ -26,6 +27,8 @@ fun main(args: Array<String>) {
 
 @RestController
 class RestController(private val giphyRestClient: GiphyRestClient) {
+
+    @CrossOrigin(origins = ["http://localhost:3000"])
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     fun get(): String? {
         return giphyRestClient.search()
@@ -36,7 +39,7 @@ class RestController(private val giphyRestClient: GiphyRestClient) {
 class GiphyRestClient(private val props: GiphyApiProperties,
                       private val restTemplate: RestTemplate) {
     fun search(): String? {
-        return restTemplate.getForObject("${props.url}/search?q=ryan+gosling&api_key=${props.key}&limit=5", String::class.java)
+        return restTemplate.getForObject("${props.url}/search?q=ryan+gosling&api_key=${props.key}&limit=10", String::class.java)
     }
 }
 
