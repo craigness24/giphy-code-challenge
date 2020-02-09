@@ -10,6 +10,7 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.client.RestTemplate
 
@@ -29,17 +30,18 @@ fun main(args: Array<String>) {
 class RestController(private val giphyRestClient: GiphyRestClient) {
 
     @CrossOrigin(origins = ["http://localhost:3000"])
-    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun get(): String? {
-        return giphyRestClient.search()
+    @GetMapping(path = ["/{searchString}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun get(@PathVariable searchString: String): String? {
+        return giphyRestClient.search(searchString)
     }
 }
 
 @Component
 class GiphyRestClient(private val props: GiphyApiProperties,
                       private val restTemplate: RestTemplate) {
-    fun search(): String? {
-        return restTemplate.getForObject("${props.url}/search?q=ryan+gosling&api_key=${props.key}&limit=10", String::class.java)
+    fun search(searchString: String): String? {
+        val url = "${props.url}/search?q=${searchString}&api_key=${props.key}&limit=10&rating=${props.rating}"
+        return restTemplate.getForObject(url, String::class.java)
     }
 }
 
@@ -48,4 +50,5 @@ class GiphyRestClient(private val props: GiphyApiProperties,
 class GiphyApiProperties() {
     lateinit var key: String;
     lateinit var url: String;
+    lateinit var rating: String;
 }

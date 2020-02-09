@@ -15,7 +15,7 @@ class App extends React.Component {
     }
 
     componentDidMount() {
-        axios.get("http://localhost:8080")
+        axios.get("http://localhost:8080/test")
             .then((res) => {
                 this.setState({
                     data: res.data.data,
@@ -65,7 +65,26 @@ class App extends React.Component {
     }
 
     onSearchSubmit(text) {
-        console.log(text)
+        axios.get(`http://localhost:8080/${text}`)
+            .then((res) => {
+                this.setState({
+                    data: res.data.data,
+                    isLoaded: true
+                });
+            }, (rejected) => {
+                this.setState({
+                    data: [],
+                    isLoaded: true,
+                    error: rejected.message
+                });
+            })
+            .catch((error) => {
+                this.setState({
+                    data: [],
+                    isLoaded: true,
+                    error: error.message
+                });
+            });
     }
 }
 
