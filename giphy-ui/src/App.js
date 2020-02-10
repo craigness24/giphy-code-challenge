@@ -15,7 +15,7 @@ class App extends React.Component {
     }
 
     componentDidMount() {
-        axios.get("http://localhost:8080/test")
+        axios.get("http://localhost:8080/api/search?q=test")
             .then((res) => {
                 this.setState({
                     data: res.data.data,
@@ -65,7 +65,7 @@ class App extends React.Component {
     }
 
     onSearchSubmit(text) {
-        axios.get(`http://localhost:8080/${text}`)
+        axios.get(`http://localhost:8080/api/search?q=${text}`)
             .then((res) => {
                 this.setState({
                     data: res.data.data,
