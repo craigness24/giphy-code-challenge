@@ -22,7 +22,7 @@ class IntegrationTests(@Autowired val restTemplate: TestRestTemplate) {
         Mockito.`when`(giphyRestClient.search("test"))
                 .thenReturn(expected)
 
-        val entity = restTemplate.getForEntity<String>("/test")
+        val entity = restTemplate.getForEntity<String>("/api/test")
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(entity.body).contains(expected)
     }

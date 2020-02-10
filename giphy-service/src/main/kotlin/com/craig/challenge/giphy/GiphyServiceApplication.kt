@@ -6,11 +6,13 @@ import org.springframework.boot.runApplication
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.stereotype.Component
-import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.client.RestTemplate
 
@@ -26,12 +28,14 @@ fun main(args: Array<String>) {
     runApplication<GiphyServiceApplication>(*args)
 }
 
-@RestController
-class RestController(private val giphyRestClient: GiphyRestClient) {
 
-    @CrossOrigin(origins = ["http://localhost:3000"])
-    @GetMapping(path = ["/{searchString}"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun get(@PathVariable searchString: String): String? {
+
+@CrossOrigin(origins = ["http://localhost:3000"])
+@RestController
+@RequestMapping("/api")
+class GiphyController(private val giphyRestClient: GiphyRestClient) {
+    @GetMapping(path = ["/search"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun get(@RequestParam("q") searchString: String): String? {
         return giphyRestClient.search(searchString)
     }
 }
@@ -52,3 +56,4 @@ class GiphyApiProperties() {
     lateinit var url: String;
     lateinit var rating: String;
 }
+
