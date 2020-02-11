@@ -57,7 +57,7 @@ class SpringSecurityConfig(
                 .and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/register").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/search").permitAll()
+//                .antMatchers(HttpMethod.GET, "/api/search").permitAll()
 //                .antMatchers("/api/**").authenticated()
                 .anyRequest().authenticated()
                 .and()

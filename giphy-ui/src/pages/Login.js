@@ -13,15 +13,11 @@ function Login(props) {
     const referer = props.location.state?.referer || '/';
 
     function loginClick() {
-        // const encoded = window.btoa(`${userName}:${password}`);
         axios.get("http://localhost:8080/login", {
             auth: {
                 username: userName,
                 password: password
             }
-            // headers: {
-            //     Authorization: `Basic ${encoded}`
-            // }
         }).then(result => {
             if (result.status === 200) {
                 setAuthTokens(result.data);
