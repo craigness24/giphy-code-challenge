@@ -2,8 +2,6 @@ import React, {useState} from "react";
 import {Link, Redirect} from 'react-router-dom';
 import {useAuth} from "../context/auth";
 import axios from "axios";
-// import logoImg from "../img/logo.jpg";
-// import { Card, Logo, Form, Input, Button } from '../components/AuthForms';
 
 function Login(props) {
     const [isLoggedIn, setLoggedIn] = useState(false);
@@ -12,15 +10,18 @@ function Login(props) {
     const [password, setPassword] = useState("");
     const {setAuthTokens} = useAuth();
 
-    console.log(props);
     const referer = props.location.state?.referer || '/';
 
     function loginClick() {
-        const encoded = window.btoa(`${userName}:${password}`);
+        // const encoded = window.btoa(`${userName}:${password}`);
         axios.get("http://localhost:8080/login", {
-            headers: {
-                Authorization: `Basic ${encoded}`
+            auth: {
+                username: userName,
+                password: password
             }
+            // headers: {
+            //     Authorization: `Basic ${encoded}`
+            // }
         }).then(result => {
             if (result.status === 200) {
                 setAuthTokens(result.data);
@@ -34,7 +35,7 @@ function Login(props) {
     }
 
     if (isLoggedIn) {
-        return <Redirect to={referer} />;
+        return <Redirect to={referer}/>;
     }
 
     return (

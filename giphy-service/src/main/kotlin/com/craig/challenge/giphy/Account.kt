@@ -1,5 +1,6 @@
 package com.craig.challenge.giphy
 
+import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.*
@@ -15,7 +16,7 @@ data class Account(val userName: String, val password: String, val passwordCheck
 class AccountController(private val repository: UserRepository,
                         private val passwordEncoder: PasswordEncoder) {
     // create
-    @RequestMapping(path = ["/register"], method = [RequestMethod.POST], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(path = ["/register"], consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun register(@RequestBody account: Account) {
         // load random id from giphy
         repository.save(
@@ -25,7 +26,7 @@ class AccountController(private val repository: UserRepository,
         )
     }
 
-    @RequestMapping(path = ["/login"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping(path = ["/login"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun login(principal: Principal): AppUser {
         return repository.findByUsername(principal.name)
                 .orElseThrow { RuntimeException("not found") }
