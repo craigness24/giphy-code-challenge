@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.post
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class GiphyUserTests {
+class GiphyAppUserTests {
 
 	@Autowired
 	lateinit var mockMvc: MockMvc;

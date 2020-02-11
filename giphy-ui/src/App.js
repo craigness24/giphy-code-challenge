@@ -1,91 +1,34 @@
-import React from 'react';
+import React, {useState} from 'react';
+import {BrowserRouter as Router, Route} from "react-router-dom";
 import './App.css';
-import axios from 'axios'
-import SearchBar from "./SearchBar";
+import Home from "./pages/Home";
+import Admin from "./Admin";
+import {AuthContext} from "./context/auth";
+import PrivateRoute from "./PrivateRoute";
+import Login from "./pages/Login";
+import Signup from "./pages/SignUp";
 
-class App extends React.Component {
+function App(props) {
+    const [authTokens, setAuthTokens] = useState();
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            isLoaded: false,
-            data: [],
-            error: undefined
-        }
-    }
+    const setTokens = (data) => {
+        localStorage.setItem("tokens", JSON.stringify(data));
+        setAuthTokens(data);
+    };
 
-    componentDidMount() {
-        axios.get("http://localhost:8080/api/search?q=test")
-            .then((res) => {
-                this.setState({
-                    data: res.data.data,
-                    isLoaded: true
-                });
-            }, (rejected) => {
-                this.setState({
-                    data: [],
-                    isLoaded: true,
-                    error: rejected.message
-                });
-            })
-            .catch((error) => {
-                this.setState({
-                    data: [],
-                    isLoaded: true,
-                    error: error.message
-                });
-            });
-    }
+    return (
+        <AuthContext.Provider value={{authTokens, setAuthTokens: setTokens}}>
+            <Router>
+                <div>
+                    <Route exact path="/" component={Home}/>
+                    <Route path="/login" component={Login}/>
+                    <Route path="/signup" component={Signup}/>
+                    <PrivateRoute path="/admin" component={Admin}/>
+                </div>
+            </Router>
+        </AuthContext.Provider>
+    );
 
-    renderSquare(key, url) {
-        return (
-            <img key={key} src={url} alt="none"/>
-        );
-    }
-
-    render() {
-        const { error, isLoaded, data } = this.state;
-        if (error) {
-            return <div>Error: {error}</div>;
-        }
-
-        if (!isLoaded) {
-            return <div>Loading...</div>;
-        }
-
-        const mp4s = data
-            .map(d => this.renderSquare(d.id, d.images.fixed_height.url));
-
-        return (
-            <div className="App">
-                <SearchBar onClick={(text) => this.onSearchSubmit(text)}/>
-                {mp4s}
-            </div>
-        );
-    }
-
-    onSearchSubmit(text) {
-        axios.get(`http://localhost:8080/api/search?q=${text}`)
-            .then((res) => {
-                this.setState({
-                    data: res.data.data,
-                    isLoaded: true
-                });
-            }, (rejected) => {
-                this.setState({
-                    data: [],
-                    isLoaded: true,
-                    error: rejected.message
-                });
-            })
-            .catch((error) => {
-                this.setState({
-                    data: [],
-                    isLoaded: true,
-                    error: error.message
-                });
-            });
-    }
 }
 
 export default App;
