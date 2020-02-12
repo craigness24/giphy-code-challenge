@@ -9,15 +9,10 @@ import Login from "./pages/Login";
 import Signup from "./pages/SignUp";
 
 function App(props) {
-    const [authTokens, setAuthTokens] = useState();
-
-    const setTokens = (data) => {
-        localStorage.setItem("tokens", JSON.stringify(data));
-        setAuthTokens(data);
-    };
+    const [authCreds, setAuthCreds] = useState({});
 
     return (
-        <AuthContext.Provider value={{authTokens, setAuthTokens: setTokens}}>
+        <AuthContext.Provider value={{authCreds, setAuthCreds}}>
             <Router>
                 <div>
                     <Route exact path="/" component={Home}/>

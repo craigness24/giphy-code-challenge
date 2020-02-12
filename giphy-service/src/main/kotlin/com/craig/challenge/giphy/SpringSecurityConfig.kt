@@ -18,7 +18,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 @EnableWebSecurity
 class SpringSecurityConfig(
-        private val userDetailsService: MongoUserDetailsService
+        private val userDetailsService: MongoUserDetailsService,
+        private val authenticationEntryPoint: MyBasicAuthenticationEntryPoint
 ) : WebSecurityConfigurerAdapter() {
 
 //
@@ -37,7 +38,7 @@ class SpringSecurityConfig(
         val configuration = CorsConfiguration()
         configuration.allowedOrigins = listOf("http://localhost:3000")
         configuration.allowedMethods = listOf("GET", "POST")
-//        configuration.allowCredentials = true
+        configuration.allowCredentials = true
         configuration.addAllowedHeader("Authorization")
         val source = UrlBasedCorsConfigurationSource()
         source.registerCorsConfiguration("/**", configuration)
@@ -62,9 +63,10 @@ class SpringSecurityConfig(
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic()
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .authenticationEntryPoint(authenticationEntryPoint)
+//                .and()
+//                .sessionManagement()
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
     }
 
 

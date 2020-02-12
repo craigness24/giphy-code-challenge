@@ -8,24 +8,28 @@ function Login(props) {
     const [isError, setIsError] = useState(false);
     const [userName, setUserName] = useState("");
     const [password, setPassword] = useState("");
-    const {setAuthTokens} = useAuth();
+    const {setAuthCreds} = useAuth();
 
     const referer = props.location.state?.referer || '/';
 
     function loginClick() {
-        axios.get("http://localhost:8080/login", {
+        const authConfig = {
             auth: {
                 username: userName,
                 password: password
-            }
-        }).then(result => {
-            if (result.status === 200) {
-                setAuthTokens(result.data);
-                setLoggedIn(true);
-            } else {
-                setIsError(true);
-            }
-        }).catch(e => {
+            },
+            withCredentials: true
+        };
+
+        axios.get("http://localhost:8080/login", authConfig)
+            .then(result => {
+                if (result.status === 200) {
+                    setAuthCreds(authConfig);
+                    setLoggedIn(true);
+                } else {
+                    setIsError(true);
+                }
+            }).catch(e => {
             setIsError(true);
         });
     }

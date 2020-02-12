@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+  database:
+    image: "postgres:12.1" 
+    ports: 
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=giphy
+      - POSTGRES_PASSWORD=Passw0rd
+      - POSTGRES_DB=giphy_db
+    volumes:
+      - database-data:/var/lib/postgresql/data/ # persist data even if container shuts down
+    networks:
+      - laptop
+
+  keycloak:
+    image: jboss/keycloak:latest
+    networks:
+      - laptop
+    environment:
+      - DB_VENDOR=POSTGRES
+      - DB_ADDR=database
+      - DB_DATABASE=giphy_db
+      - DB_PORT=5432
+      - DB_USER=giphy
+      - DB_SCHEMA=public
+      - DB_PASSWORD=Passw0rd
+      - KEYCLOAK_USER=keycloaker
+      - KEYCLOAK_PASSWORD=Passw0rd
+      - PROXY_ADDRESS_FORWARDING=true
+    ports:
+      - 8090:8080
+    depends_on:
+      - database
+    volumes:
+      - keycloak-api-data:/opt/jboss/keycloak/realm-api.json
+      - keycloak-app-data:/opt/jboss/keycloak/realm-app.json
+
+
+volumes:
+  database-data: # named volumes can be managed easier using docker-compose
+  keycloak-api-data:
+  keycloak-app-data:
+
+networks:
+  laptop:
+    driver: bridge

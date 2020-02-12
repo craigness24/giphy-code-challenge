@@ -1,8 +1,16 @@
-import React from "react";
+import React, {useState} from "react";
 import GifGrid from "./GifGrid"
+import SearchBar from "../SearchBar";
 
 function Home(props) {
-    return <GifGrid/>;
+    const [searchString, setSearchString] = useState("");
+
+    return (
+        <div>
+            <SearchBar onClick={(text) => setSearchString(text)}/>
+            <GifGrid searchString={searchString}/>
+        </div>
+    )
 }
 
 export default Home;
