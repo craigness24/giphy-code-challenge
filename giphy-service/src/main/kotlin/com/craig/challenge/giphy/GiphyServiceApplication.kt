@@ -10,8 +10,13 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.client.getForObject
+import java.security.Principal
 import java.util.*
 
 @SpringBootApplication
@@ -32,36 +37,54 @@ fun main(args: Array<String>) {
     runApplication<GiphyServiceApplication>(*args)
 }
 
+data class GiphyImageDetails(val url: String)
+data class GiphyImage(val fixed_height: GiphyImageDetails)
+data class GiphyObject(val id: String, val images: GiphyImage)
+data class GiphyResponse(val data: List<GiphyObject>)
 
-@CrossOrigin(origins = ["http://localhost:3000"])
+data class AppGiphys(val giphyId: String,
+                     val liked: Boolean = false,
+                     val url: String,
+                     val categories: Set<String> = HashSet())
+
 @RestController
 @RequestMapping("/api")
-class GiphyController(private val giphyRestClient: GiphyRestClient) {
+class GiphyController(
+        private val giphyRestClient: GiphyRestClient,
+        private val userRepository: UserRepository) {
 
+    /**
+     * Merge the giphy result set with the saved profile data if any, that way we can show the liked and categories
+     * on the search results
+     */
     @GetMapping(path = ["/search"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun get(@RequestParam("q") searchString: String): String? {
-        return giphyRestClient.search(searchString)
-    }
+    fun get(@RequestParam("q") searchString: String, principal: Principal): List<AppGiphys> {
+        val giphySearch: GiphyResponse? = giphyRestClient.search(searchString)
+        val dbGiphys: Map<String, GiphyCard> = userRepository.findByUsername(principal.name)
+                .map { it.giphyCards }
+                .orElse(emptyMap())
 
-    @GetMapping("/api/health")
-    fun hello(): Health {
-        return Health.UP
-    }
+        val convertedMap = giphySearch?.data
+                ?.map {
+                        val get: GiphyCard? = dbGiphys[it.id]
+                        if (get != null) {
+                            AppGiphys(giphyId = it.id, liked = true, url = it.images.fixed_height.url, categories = get.categories)
+                        } else {
+                            AppGiphys(giphyId = it.id, liked = false, url = it.images.fixed_height.url, categories = emptySet())
+                        }
+                }
+                ?: emptyList()
 
-}
-
-data class Health(val status: String) {
-    companion object {
-        val UP = Health("UP")
+        return convertedMap;
     }
 }
 
 @Component
 class GiphyRestClient(private val props: GiphyApiProperties,
                       private val restTemplate: RestTemplate) {
-    fun search(searchString: String): String? {
+    fun search(searchString: String): GiphyResponse? {
         val url = "${props.url}/search?q=${searchString}&api_key=${props.key}&limit=10&rating=${props.rating}"
-        return restTemplate.getForObject(url, String::class.java)
+        return restTemplate.getForObject(url, GiphyResponse::class)
     }
 }
 

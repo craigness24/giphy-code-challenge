@@ -4,11 +4,15 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.HashSet;
 
-
-@CrossOrigin(origins = "http://localhost:3000")
+/**
+ * Intended to be the user actions:
+ * Liking gifs
+ * Adding Categories
+ */
 @RestController
-@RequestMapping("/user")
+@RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
 public class GiphyUserController {
     private final UserRepository userRepository;
 
@@ -16,19 +20,24 @@ public class GiphyUserController {
         this.userRepository = userRepository;
     }
 
-    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public AppUser save(Principal principal) {
-        // TODO throw not found
-        return userRepository.findById(principal.getName())
-                .orElse(null);
+    @GetMapping
+    public UserProfile get(Principal principal) {
+        AppUser findById = userRepository.findByUsername(principal.getName())
+                .orElseThrow(() -> new RuntimeException("User Not Found"));
+
+        return new UserProfile(findById.getId(), findById.getUsername(), findById.getGiphyCards().values());
     }
 
-//    @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-//    public User save(@RequestBody SaveDTO saveDTO, Principal principal) {
-//        User findById = userRepository.findById(principal.getName())
-//                .orElse(new User(principal.getName(), new ArrayList<>()));
-//
-//        findById.getGiphyIds().add(saveDTO.getGiphyId());
-//        return userRepository.save(findById);
-//    }
+    @PostMapping(path = "/like", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public UserProfile like(@RequestBody SaveDTO saveDTO, Principal principal) {
+        AppUser findById = userRepository.findByUsername(principal.getName())
+                .orElseThrow(() -> new RuntimeException("User Not Found"));
+
+        findById.getGiphyCards()
+                .putIfAbsent(saveDTO.getGiphyId(), new GiphyCard(saveDTO.getGiphyId(), new HashSet<>()));
+
+        AppUser saved = userRepository.save(findById);
+
+        return new UserProfile(saved.getId(), saved.getUsername(), saved.getGiphyCards().values());
+    }
 }

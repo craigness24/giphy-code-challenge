@@ -1,40 +1,52 @@
 package com.craig.challenge.giphy
 
-import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 import java.util.*
 
-data class ApplicationUser(val username: String, val password: String)
+/**
+ * Used as an input from the web on the register POST request
+ */
+data class AccountDTO(val userName: String, val password: String, val passwordCheck: String)
 
-data class Account(val userName: String, val password: String, val passwordCheck: String)
-
-@CrossOrigin(origins = ["http://localhost:3000"])
+/**
+ * Intended to be used as the root account paths for register/login
+ */
 @RestController
 class AccountController(private val repository: UserRepository,
                         private val passwordEncoder: PasswordEncoder) {
     // create
     @PostMapping(path = ["/register"], consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun register(@RequestBody account: Account) {
-        // load random id from giphy
+    fun register(@RequestBody accountDTO: AccountDTO) {
+        if (!accountDTO.password.equals(accountDTO.passwordCheck)) {
+            throw RuntimeException("Password check failed");
+        }
+
         repository.save(
                 AppUser(id = UUID.randomUUID().toString(),
-                        username = account.userName,
-                        password = passwordEncoder.encode(account.password))
+                        username = accountDTO.userName,
+                        password = passwordEncoder.encode(accountDTO.password))
         )
     }
 
     @GetMapping(path = ["/login"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun login(principal: Principal): AppUser {
-        return repository.findByUsername(principal.name)
-                .orElseThrow { RuntimeException("not found") }
+    fun login(principal: Principal): UserProfile {
+        val appUser = repository.findByUsername(principal.name)
+                .orElseThrow { RuntimeException("user not found") }
+
+        return UserProfile(id = appUser.id, username = appUser.username, giphys = appUser.giphyCards.values)
     }
 
-    @RequestMapping(path = ["/me"], method = [RequestMethod.POST], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun me(principal: Principal): AppUser {
-        return repository.findByUsername(principal.name)
-                .orElseThrow { RuntimeException("not found") }
+    @GetMapping(path = ["/me"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun me(principal: Principal): UserProfile {
+        val appUser = repository.findByUsername(principal.name)
+                .orElseThrow { RuntimeException("user not found") }
+
+        return UserProfile(id = appUser.id, username = appUser.username, giphys = appUser.giphyCards.values)
     }
 }

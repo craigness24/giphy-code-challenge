@@ -1,29 +1,33 @@
-import React, {useState} from 'react';
-import {BrowserRouter as Router, Route} from "react-router-dom";
+import React from 'react';
+import { Route, Router } from "react-router-dom";
 import './App.css';
 import Home from "./pages/Home";
-import Admin from "./Admin";
-import {AuthContext} from "./context/auth";
-import PrivateRoute from "./PrivateRoute";
+import Profile from "./Profile";
 import Login from "./pages/Login";
-import Signup from "./pages/SignUp";
+import Registration from "./pages/Registration";
+import history from "./history";
+import MenuBar from "./components/MenuBar";
+import { Container } from "react-bootstrap";
+import Logout from "./pages/Logout";
 
-function App(props) {
-    const [authCreds, setAuthCreds] = useState({});
-
+const App = (props) => {
     return (
-        <AuthContext.Provider value={{authCreds, setAuthCreds}}>
-            <Router>
-                <div>
+        <div>
+            <MenuBar/>
+            <Container>
+                <Router history={history}>
+                    {/*<UserProvider>*/}
                     <Route exact path="/" component={Home}/>
                     <Route path="/login" component={Login}/>
-                    <Route path="/signup" component={Signup}/>
-                    <PrivateRoute path="/admin" component={Admin}/>
-                </div>
-            </Router>
-        </AuthContext.Provider>
+                    <Route path="/register" component={Registration}/>
+                    <Route path="/logout" component={Logout}/>
+                    <Route path="/profile" component={Profile}/>
+                    {/*<PrivateRoute path="/profile" component={Profile}/>*/}
+                    {/*</UserProvider>*/}
+                </Router>
+            </Container>
+        </div>
     );
-
-}
+};
 
 export default App;

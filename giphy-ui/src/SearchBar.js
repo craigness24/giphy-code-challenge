@@ -1,27 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Button, Form, FormControl } from "react-bootstrap";
 
-class SearchBar extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            searchString: 'default'
-        };
-    }
+const SearchBar = ({ onClick }) => {
+    const [searchString, setSearchString] = useState('default');
 
-    onSearchChange = event => {
-        this.setState({
-            [event.target.name]: event.target.value
-        });
+    const onSearchChange = (event) => {
+        setSearchString(event.target.value);
     };
 
-    render() {
-        return (
-            <div>
-                <input name="searchString" value={this.state.searchString} onChange={this.onSearchChange}/>
-                <button type="submit" onClick={() => this.props.onClick(this.state.searchString)}>Search</button>
-            </div>
-        );
-    }
-}
+    return (
+        <Form inline>
+            <FormControl type="text" placeholder="Search" className="mr-sm-2" value={searchString} onChange={onSearchChange}/>
+            <Button variant="outline-success" onClick={() => onClick(searchString)}>Search</Button>
+        </Form>
+    );
+};
 
 export default SearchBar;

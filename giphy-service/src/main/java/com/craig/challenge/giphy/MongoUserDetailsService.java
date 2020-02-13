@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 
+/**
+ * Used by the spring security config so it can lookup the user from my db implementation
+ */
 @Component
 public class MongoUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;

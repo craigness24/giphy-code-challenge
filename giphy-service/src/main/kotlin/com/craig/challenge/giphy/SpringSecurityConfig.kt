@@ -7,14 +7,16 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
-import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
-
+/**
+ * This is the main spring configuration for spring security - this was a time sink.
+ */
 @Configuration
 @EnableWebSecurity
 class SpringSecurityConfig(
@@ -22,24 +24,17 @@ class SpringSecurityConfig(
         private val authenticationEntryPoint: MyBasicAuthenticationEntryPoint
 ) : WebSecurityConfigurerAdapter() {
 
-//
-//    @Bean
-//    fun corsConfigurationSource(): CorsConfigurationSource? {
-//        val source = UrlBasedCorsConfigurationSource()
-//        source.registerCorsConfiguration("/**", CorsConfiguration().applyPermitDefaultValues())
-//        return source
-//    }
-
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf("http://localhost:3000")
+        configuration.allowedOrigins = listOf("*")
         configuration.allowedMethods = listOf("GET", "POST")
         configuration.allowCredentials = true
         configuration.addAllowedHeader("Authorization")
+        configuration.addAllowedHeader("content-type")
         val source = UrlBasedCorsConfigurationSource()
         source.registerCorsConfiguration("/**", configuration)
         return source
@@ -64,6 +59,10 @@ class SpringSecurityConfig(
                 .and()
                 .httpBasic()
                 .authenticationEntryPoint(authenticationEntryPoint)
+                .and()
+                .logout()
+                .logoutRequestMatcher(AntPathRequestMatcher("/logout"))
+                .logoutSuccessUrl("/login");
 //                .and()
 //                .sessionManagement()
 //                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

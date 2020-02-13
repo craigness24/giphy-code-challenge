@@ -1,14 +1,16 @@
 import React, {useState} from "react";
-import GifGrid from "./GifGrid"
+import GifList from "./GifList"
 import SearchBar from "../SearchBar";
+import MenuBar from "../components/MenuBar";
 
 function Home(props) {
     const [searchString, setSearchString] = useState("");
 
     return (
         <div>
+
             <SearchBar onClick={(text) => setSearchString(text)}/>
-            <GifGrid searchString={searchString}/>
+            <GifList searchString={searchString}/>
         </div>
     )
 }
