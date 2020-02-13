@@ -3,12 +3,14 @@ package com.craig.challenge.giphy
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
@@ -62,7 +64,7 @@ class SpringSecurityConfig(
                 .and()
                 .logout()
                 .logoutRequestMatcher(AntPathRequestMatcher("/logout"))
-                .logoutSuccessUrl("/login");
+                .logoutSuccessHandler(HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
 //                .and()
 //                .sessionManagement()
 //                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

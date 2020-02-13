@@ -1,5 +1,7 @@
 package com.craig.challenge.giphy
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.GetMapping
@@ -17,13 +19,16 @@ data class AccountDTO(val userName: String, val password: String, val passwordCh
 /**
  * Intended to be used as the root account paths for register/login
  */
+
 @RestController
 class AccountController(private val repository: UserRepository,
                         private val passwordEncoder: PasswordEncoder) {
-    // create
+    val log: Logger = LoggerFactory.getLogger(this.javaClass.name)
+
     @PostMapping(path = ["/register"], consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun register(@RequestBody accountDTO: AccountDTO) {
-        if (!accountDTO.password.equals(accountDTO.passwordCheck)) {
+        log.info("Attempting to register user ${accountDTO.userName}")
+        if (accountDTO.password != accountDTO.passwordCheck) {
             throw RuntimeException("Password check failed");
         }
 
@@ -36,17 +41,11 @@ class AccountController(private val repository: UserRepository,
 
     @GetMapping(path = ["/login"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun login(principal: Principal): UserProfile {
+        log.info("Attempting to login ${principal.name}")
         val appUser = repository.findByUsername(principal.name)
                 .orElseThrow { RuntimeException("user not found") }
 
         return UserProfile(id = appUser.id, username = appUser.username, giphys = appUser.giphyCards.values)
     }
 
-    @GetMapping(path = ["/me"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun me(principal: Principal): UserProfile {
-        val appUser = repository.findByUsername(principal.name)
-                .orElseThrow { RuntimeException("user not found") }
-
-        return UserProfile(id = appUser.id, username = appUser.username, giphys = appUser.giphyCards.values)
-    }
 }

@@ -3,6 +3,7 @@ import GifList from "./GifList"
 import HTTP from "../config/app-config";
 import { Col, Container, Row } from "react-bootstrap";
 import SearchBar from "../components/SearchBar";
+import { Redirect } from "react-router";
 
 function Home(props) {
     const [searchString, setSearchString] = useState("");
@@ -28,7 +29,7 @@ function Home(props) {
 
     const content = () => {
         if (error) {
-            return <div>Error: {error}</div>;
+            return <Redirect to={"/login"}/>;
         }
 
         if (!isLoaded) {

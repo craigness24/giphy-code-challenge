@@ -46,6 +46,7 @@ const GifCard = ({ categories, liked, gifId, imgSrcUrl }) => {
                     <Form.Check
                         type={"checkbox"}
                         label={"Liked"}
+                        checked={liked}
                         onChange={onLike}
                     />
                     <FormControl type="text" placeholder="Category" className="mr-sm-2" value={categoryString}

@@ -15,7 +15,7 @@ const Logout = () => {
             });
     }, []);
 
-    if (isLoggedOut) return <Redirect to={"/login"}/>;
+    if (isLoggedOut) return <Redirect to={"/home"}/>;
 
     return <div>Logging out...</div>
 };
