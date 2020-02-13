@@ -42,10 +42,10 @@ data class GiphyImage(val fixed_height: GiphyImageDetails)
 data class GiphyObject(val id: String, val images: GiphyImage)
 data class GiphyResponse(val data: List<GiphyObject>)
 
-data class AppGiphys(val giphyId: String,
-                     val liked: Boolean = false,
-                     val url: String,
-                     val categories: Set<String> = HashSet())
+data class AppGiphy(val giphyId: String,
+                    val liked: Boolean = false,
+                    val url: String,
+                    val categories: Set<String> = HashSet())
 
 @RestController
 @RequestMapping("/api")
@@ -53,29 +53,41 @@ class GiphyController(
         private val giphyRestClient: GiphyRestClient,
         private val userRepository: UserRepository) {
 
+    @GetMapping(path = ["/giphys"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun get(principal: Principal): List<AppGiphy> {
+        val dbGiphys: Map<String, GiphyCard> = userRepository.findByUsername(principal.name)
+                .map { it.giphyCards }
+                .orElse(emptyMap())
+
+        val giphySearch: GiphyResponse? = giphyRestClient.byIds(dbGiphys.keys)
+        return mergeGiphys(giphySearch, dbGiphys)
+    }
+
     /**
      * Merge the giphy result set with the saved profile data if any, that way we can show the liked and categories
      * on the search results
      */
     @GetMapping(path = ["/search"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun get(@RequestParam("q") searchString: String, principal: Principal): List<AppGiphys> {
+    fun get(@RequestParam("q") searchString: String, principal: Principal): List<AppGiphy> {
         val giphySearch: GiphyResponse? = giphyRestClient.search(searchString)
         val dbGiphys: Map<String, GiphyCard> = userRepository.findByUsername(principal.name)
                 .map { it.giphyCards }
                 .orElse(emptyMap())
 
-        val convertedMap = giphySearch?.data
+        return mergeGiphys(giphySearch, dbGiphys);
+    }
+
+    private fun mergeGiphys(giphySearch: GiphyResponse?, dbGiphys: Map<String, GiphyCard>): List<AppGiphy> {
+        return giphySearch?.data
                 ?.map {
-                        val get: GiphyCard? = dbGiphys[it.id]
-                        if (get != null) {
-                            AppGiphys(giphyId = it.id, liked = true, url = it.images.fixed_height.url, categories = get.categories)
-                        } else {
-                            AppGiphys(giphyId = it.id, liked = false, url = it.images.fixed_height.url, categories = emptySet())
-                        }
+                    val get: GiphyCard? = dbGiphys[it.id]
+                    if (get != null) {
+                        AppGiphy(giphyId = it.id, liked = true, url = it.images.fixed_height.url, categories = get.categories)
+                    } else {
+                        AppGiphy(giphyId = it.id, liked = false, url = it.images.fixed_height.url, categories = emptySet())
+                    }
                 }
                 ?: emptyList()
-
-        return convertedMap;
     }
 }
 
@@ -83,7 +95,13 @@ class GiphyController(
 class GiphyRestClient(private val props: GiphyApiProperties,
                       private val restTemplate: RestTemplate) {
     fun search(searchString: String): GiphyResponse? {
-        val url = "${props.url}/search?q=${searchString}&api_key=${props.key}&limit=10&rating=${props.rating}"
+        val url = "${props.url}/search?q=$searchString&api_key=${props.key}&limit=10&rating=${props.rating}"
+        return restTemplate.getForObject(url, GiphyResponse::class)
+    }
+
+    fun byIds(keys: Set<String>): GiphyResponse? {
+        val idCsv = keys.joinToString(",")
+        val url = "${props.url}?api_key=${props.key}&ids=$idCsv"
         return restTemplate.getForObject(url, GiphyResponse::class)
     }
 }

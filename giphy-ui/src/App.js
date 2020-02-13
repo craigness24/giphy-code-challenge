@@ -7,25 +7,22 @@ import Login from "./pages/Login";
 import Registration from "./pages/Registration";
 import history from "./history";
 import MenuBar from "./components/MenuBar";
-import { Container } from "react-bootstrap";
 import Logout from "./pages/Logout";
 
 const App = (props) => {
     return (
-        <div>
+        <div className={"App"}>
             <MenuBar/>
-            <Container>
-                <Router history={history}>
-                    {/*<UserProvider>*/}
-                    <Route exact path="/" component={Home}/>
-                    <Route path="/login" component={Login}/>
-                    <Route path="/register" component={Registration}/>
-                    <Route path="/logout" component={Logout}/>
-                    <Route path="/profile" component={Profile}/>
-                    {/*<PrivateRoute path="/profile" component={Profile}/>*/}
-                    {/*</UserProvider>*/}
-                </Router>
-            </Container>
+            <Router history={history}>
+                {/*<UserProvider>*/}
+                <Route exact path="/" component={Home}/>
+                <Route path="/login" component={Login}/>
+                <Route path="/register" component={Registration}/>
+                <Route path="/logout" component={Logout}/>
+                <Route path="/profile" component={Profile}/>
+                {/*<PrivateRoute path="/profile" component={Profile}/>*/}
+                {/*</UserProvider>*/}
+            </Router>
         </div>
     );
 };

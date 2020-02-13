@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import GifList from "./GifList"
-import SearchBar from "../components/SearchBar";
 import HTTP from "../config/app-config";
+import { Col, Container, Row } from "react-bootstrap";
+import SearchBar from "../components/SearchBar";
 
 function Home(props) {
     const [searchString, setSearchString] = useState("");
@@ -38,10 +39,18 @@ function Home(props) {
     };
 
     return (
-        <div>
-            <SearchBar onClick={(text) => setSearchString(text)}/>
-            {content()}
-        </div>
+        <Container>
+            <Row>
+                <Col>
+                    <SearchBar onClick={(text) => setSearchString(text)}/>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                   {content()}
+                </Col>
+            </Row>
+        </Container>
     )
 }
 

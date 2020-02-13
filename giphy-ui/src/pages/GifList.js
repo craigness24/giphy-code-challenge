@@ -2,17 +2,21 @@ import React from "react";
 import GifCard from "../components/GifCard";
 
 const GifList = ({ gifList }) => {
-    function renderGifCard(key, liked, url) {
+    function renderGifCard(appGiphy) {
         return (
-            <GifCard key={key} liked={liked} gifId={key} imgSrcUrl={url}/>
+            <GifCard key={appGiphy.giphyId}
+                     categories={appGiphy.categories}
+                     liked={appGiphy.liked}
+                     gifId={appGiphy.giphyId}
+                     imgSrcUrl={appGiphy.url}/>
         );
     }
 
     const gifCards = gifList
-        .map(d => renderGifCard(d.giphyId, d.liked, d.url));
+        .map(d => renderGifCard(d));
 
     return (
-        <div className="App">
+        <div>
             {gifCards}
         </div>
     );

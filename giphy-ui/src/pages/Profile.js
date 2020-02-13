@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import HTTP from "../config/app-config"
+import GifList from "./GifList";
 
 const Profile = () => {
-    const [profile, setProfile] = useState({});
+    const [appGiphys, setAppGiphys] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await HTTP.get("/profile");
-                setProfile(res.data)
+                console.log("here");
+                const res = await HTTP.get("/api/giphys");
+                setAppGiphys(res.data)
             } catch (err) {
                 console.log(err);
             }
@@ -19,7 +21,7 @@ const Profile = () => {
 
     return (
         <div>
-            <div>Profile!</div>
+            <GifList gifList={appGiphys}/>
         </div>
     );
 };
