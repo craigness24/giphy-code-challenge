@@ -3,12 +3,11 @@ package com.craig.challenge.giphy
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.repository.MongoRepository
 import java.util.*
-import javax.persistence.Id
 import kotlin.collections.HashMap
 
 
 @Document
-data class AppUser(@Id val id: String,
+data class AppUser(val id: String,
                    val username: String,
                    val password: String,
                    val giphyCards: Map<String, GiphyCard> = HashMap())
