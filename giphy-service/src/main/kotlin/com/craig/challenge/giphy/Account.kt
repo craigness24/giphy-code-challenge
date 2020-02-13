@@ -2,12 +2,10 @@ package com.craig.challenge.giphy
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.security.Principal
 import java.util.*
 
@@ -25,6 +23,7 @@ class AccountController(private val repository: UserRepository,
                         private val passwordEncoder: PasswordEncoder) {
     val log: Logger = LoggerFactory.getLogger(this.javaClass.name)
 
+    @ResponseStatus(HttpStatus.ACCEPTED)
     @PostMapping(path = ["/register"], consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun register(@RequestBody accountDTO: AccountDTO) {
         log.info("Attempting to register user ${accountDTO.userName}")
