@@ -1,14 +1,13 @@
 import React, { useState } from "react";
-import axios from "axios"
 import { Button, Card } from "react-bootstrap";
+import HTTP from "../config/app-config";
 
 const GifCard = ({ liked, gifId, imgSrcUrl }) => {
     const [isLiked, setLiked] = useState(liked);
 
     const onLike = () => {
-        axios.post("http://localhost:8080/user/like",
-            { giphyId: gifId },
-            { withCredentials: true })
+        HTTP.post("/user/like",
+            { giphyId: gifId })
             .then(res => {
                 setLiked(true);
             })

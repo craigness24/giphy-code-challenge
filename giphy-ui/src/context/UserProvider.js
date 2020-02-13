@@ -1,15 +1,15 @@
 import React, { createContext, useEffect, useState } from "react";
-import axios from "axios"
+import HTTP from "../config/app-config.js"
 
 const context = createContext(null);
 
 const UserProvider = ({ children }) => {
-    const [user, setUser] = useState();
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await axios.get("http://localhost:8080/me", { withCredentials: true });
+                const res = await HTTP.get("/me");
                 setUser(res.data)
             } catch (err) {
                 console.log(err);

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, Redirect } from 'react-router-dom';
-import axios from "axios";
+import HTTP from "../config/app-config";
 
 const Login = (props) => {
     const [isLoggedIn, setLoggedIn] = useState(false);
@@ -15,11 +15,10 @@ const Login = (props) => {
             auth: {
                 username: userName,
                 password: password
-            },
-            withCredentials: true
+            }
         };
 
-        axios.get("http://localhost:8080/login", authConfig)
+        HTTP.get("/login", authConfig)
             .then(result => {
                 if (result.status === 200) {
                     setLoggedIn(true);

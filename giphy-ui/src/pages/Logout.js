@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Redirect } from 'react-router-dom';
-import axios from "axios";
+import HTTP from "../config/app-config"
 
 const Logout = () => {
     const [isLoggedOut, setLoggedOut] = useState(false);
 
     useEffect(() => {
-        axios.get("http://localhost:8080/logout", { withCredentials: true })
+        HTTP.get("/logout")
             .then(result => {
                 setLoggedOut(true);
             })

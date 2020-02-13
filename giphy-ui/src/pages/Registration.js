@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, Redirect } from 'react-router-dom';
 import { Button, Form } from "react-bootstrap";
-import axios from "axios";
+import HTTP from "../config/app-config"
 
 const Registration = () => {
     const [registered, setRegistered] = useState(false);
@@ -10,16 +10,13 @@ const Registration = () => {
     const [passwordCheck, setPasswordCheck] = useState('');
 
     const onRegister = () => {
-        axios.post("http://localhost:8080/register",
+        HTTP.post("/register",
             {
                 userName: userName,
                 password: password,
                 passwordCheck: passwordCheck
-            },
-            { withCredentials: true })
+            })
             .then(res => {
-                console.log("hjere");
-                console.log(res);
                 setRegistered(true);
             })
             .catch(error => {
